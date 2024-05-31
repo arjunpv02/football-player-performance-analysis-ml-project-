@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goalkeeper Analysis</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Pink border color for the webpage */
+        body {
+            border: 50px solid pink;
+            padding: 80px;
+        }
+
+        /* Form input fields styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Light blue color for form inputs */
+        .light-blue {
+            background-color: #ADD8E6;
+        }
+
+        /* Green color for form inputs */
+        .green {
+            background-color: lightgreen;
+        }
+
+        /* Yellow color for form inputs */
+        .yellow {
+            background-color: #FFFF99;
+        }
+                /* Gold background color for the webpage */
+        body {
+            background-color: gold;
+            padding: 80px;
+        }
+        /* Image under the submit button */
+        .bottom-image {
+            width: 4cm;
+            height: 5cm;
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Goalkeeper Analysis</h1>
+        {% if message %}
+        <div class="alert alert-warning" role="alert">
+            {{ message }}
+        </div>
+        {% else %}
+        <div class="alert alert-success" role="alert">
+            Mean Squared Error: {{ mse }}
+        </div>
+        {% endif %}
+        
+        <!-- Display performance categories -->
+        <div class="performance-category">
+            <h2>Performance Categories</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Very Low</td>
+                                <td>Performance below 25%</td>
+                            </tr>
+                            <tr>
+                                <td>Low</td>
+                                <td>Performance between 25% and 50%</td>
+                            </tr>
+                            <tr>
+                                <td>Medium</td>
+                                <td>Performance between 50% and 75%</td>
+                            </tr>
+                            <tr>
+                                <td>High</td>
+                                <td>Performance above 75%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display goalkeeper data -->
+        <div class="table-container">
+            <h2>Goalkeeper Performance</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped performance-table">
+                        <thead>
+                            <tr>
+                                <th>Player Name</th>
+                                <th>GK Performance</th>
+                                <th>Performance Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(10) %}
+                            <tr>
+                                <td>{{ gk_pass.iloc[i]['Known As'] }}</td>
+                                <td>{{ gk_pass.iloc[i]['GK Performance'] }}</td>
+                                <td>{{ gk_pass.iloc[i]['Performance Category'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-4">
+            <div class="row">
+                <!-- Real Madrid CF Goalkeepers Section -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-danger text-white">
+                            <h2 class="mb-0">Real Madrid CF Goalkeepers</h2>
+                        </div>
+                        <div class="card-body" style="background-color: lightgreen;">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Player Name</th>
+                                        <th>GK Performance</th>
+                                        <th>Performance Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for index, row in real_gk_pass.iterrows() %}
+                                    <tr>
+                                        <td>{{ row['Known As'] }}</td>
+                                        <td>{{ row['GK Performance'] }}</td>
+                                        <td>{{ row['Performance Category'] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input Player Data Form -->
+                <div class="col-md-6">
+                    <div class="card bg-gold">
+                        <div class="card-header">
+                            <h2 class="mb-4">Input Player Data</h2>
+                        </div>
+                        <div class="card-body">
+                            <form action="/goalkeeper" method="post">
+                                <div class="form-group light-blue">
+                                    <label for="player-name">Player's Name:</label>
+                                    <input type="text" class="form-control" id="player_name" name="player_name" required>
+                                </div>
+                                <div class="form-group green">
+                                    <label for="overall">Overall Rating:</label>
+                                    <input type="number" class="form-control" id="overall" name="overall" required>
+                                </div>
+                                <div class="form-group yellow">
+                                    <label for="potential">Potential Rating:</label>
+                                    <input type="number" class="form-control" id="potential" name="potential" required>
+                                </div>
+                                <div class="form-group light-blue">
+                                    <label for="gk-rating">GK Rating:</label>
+                                    <input type="number" class="form-control" id="gk-rating" name="gk_rating" required>
+                                </div>
+                                <div class="form-group green">
+                                    <label for="gk-diving">GK Diving Rating:</label>
+                                    <input type="number" class="form-control" id="gk-diving" name="gk_diving" required>
+                                </div>
+                                <div class="form-group yellow">
+                                    <label for="gk-handling">GK Handling Rating:</label>
+                                    <input type="number" class="form-control" id="gk-handling" name="gk_handling" required>
+                                </div>
+                                <div class="form-group light-blue">
+                                    <label for="gk-kicking">GK Kicking Rating:</label>
+                                    <input type="number" class="form-control" id="gk-kicking" name="gk_kicking" required>
+                                </div>
+                                <div class="form-group green">
+                                    <label for="gk-positioning">GK Positioning Rating:</label>
+                                    <input type="number" class="form-control" id="gk-positioning" name="gk_positioning" required>
+                                </div>
+                                <div class="form-group yellow">
+                                    <label for="gk-reflexes">GK Reflexes Rating:</label>
+                                    <input type="number" class="form-control" id="gk-reflexes" name="gk_reflexes" required>
+                                </div>
+                                <div class="form-group yellow">
+                                    <label for="club_name">GK club name:</label>
+                                    <input type="text" class="form-control" id="club_name" name="club_name" required>
+                                </div>
+                                <div class="form-group yellow">
+                                    <label for="preffered foot">preferred_foot:</label>
+                                    <input type="text" class="form-control" id="preffered_foot " name="preffered_foot" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                            <!-- Display Results -->
+                            {% if predicted_gk_performance %}
+                            <div class="mt-4">
+                                <h2>Predicted GK Performance</h2>
+                                <p>{{ predicted_gk_performance }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image at the bottom -->
+    <div class="bottom-image">
+        <!-- Assuming image_file is the variable passed from Flask containing the image file path -->
+        <img src="{{ image_file }}" alt="Graph Image">
+    </div>
+
+    <div>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="GK Analysis Plot">
+    </div>
+
+</body>
+</html>
