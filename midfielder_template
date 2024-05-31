@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midfielder Analysis</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Pink border color for the webpage */
+        /* Custom border with two colors */
+        body {
+            border-top: 45px solid black;
+            border-bottom: 40px solid #FF007F; /* Rose color */
+            border-left: 20px green;
+            border-right: 15px green;
+            padding: 20px;
+            /* Background image */
+            /*background-image: url('C:/Users/arjun/Desktop/flask2/flask ml 2/templates/thiago_silva_image.jpg'); /* Path to your background image */
+            background-size: cover;
+            background-position: center;
+            /* Other styles */
+            color: #000; /* Default text color */
+        }
+
+        /* Form input fields styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Light blue color for form inputs */
+        .light-blue {
+            background-color: #ADD8E6;
+        }
+
+        /* Green color for form inputs */
+        .green {
+            background-color: lightgreen;
+        }
+
+        /* Yellow color for form inputs */
+        .yellow {
+            background-color: #FFFF99;
+        }
+
+        /* Table heading color */
+        th {
+            color: red !important; /* Set text color to black */
+        }
+
+        /* Table data color */
+        td {
+            color: black !important; /* Set text color to black */
+        }
+    </style>
+</head>
+<body style="background-image: url('\images\mid_modric.jpg');">
+    <div class="container">
+        <h1 class="mb-4">Midfielder Analysis</h1>
+        
+        {% if message %}
+        <div class="alert alert-warning" role="alert">
+            {{ message }}
+        </div>
+        {% else %}
+        <div class="alert alert-success" role="alert">
+            Train MSE: {{ cm_train_mse_knn }}
+            Test MSE: {{ cm_test_mse_knn }}
+        </div>
+        {% endif %}
+        
+        <!-- Input Midfielder Data Form -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card bg-gold">
+            <div class="card-header">
+                <h2 class="mb-4">Input Midfielder Data</h2>
+            </div>
+            <div class="card-body">
+                <form action="/midfielder" method="post">
+                    <div class="form-group light-blue">
+                        <label for="overall">Player name</label>
+                        <input type="text" class="form-control" id="player_name" name="player_name" required>
+                    </div>
+                    
+                    <div class="form-group light-blue">
+                        <label for="overall">Overall Rating:</label>
+                        <input type="number" class="form-control" id="overall" name="overall" required>
+                    </div>
+
+                    <div class="form-group green">
+                        <label for="potential">Potential Rating:</label>
+                        <input type="number" class="form-control" id="potential" name="potential" required>
+                    </div>
+                    <div class="form-group yellow">
+                        <label for="total-stats">Total Stats:</label>
+                        <input type="number" class="form-control" id="total-stats" name="total-stats" required>
+                    </div>
+                    <div class="form-group light-blue">
+                        <label for="base-stats">Base Stats:</label>
+                        <input type="number" class="form-control" id="base-stats" name="base-stats" required>
+                    </div>
+                    <!-- Add more form input fields for other relevant features -->
+                    <div class="form-group light-blue">
+                        <label for="base-stats">Base Stats:</label>
+                        <input type="number" class="form-control" id="base-stats" name="base-stats" required>
+                    </div>
+
+                    <div class="form-group light-blue">
+                        <label for="overall">crossing ability</label>
+                        <input type="number" class="form-control" id="crossing" name="crossing" required>
+                    </div>
+
+                    <div class="form-group light-blue">
+                        <label for="overall">CM rating</label>
+                        <input type="number" class="form-control" id="cm_rating" name="cm_rating" required>
+                    </div>
+                    
+                    <div class="form-group green">
+                        <label for="international-reputation">International Reputation:</label>
+                        <input type="number" class="form-control" id="international-reputation" name="international-reputation" required>
+                    </div>
+
+                    <div class="form-group light-blue">
+                        <label for="overall">club_name</label>
+                        <input type="text" class="form-control" id=" club_name" name="club_name" required>
+                    </div>
+
+                    <div class="form-group light-blue">
+                        <label for="overall">preferred_foot</label>
+                        <input type="text" class="form-control" id="preffered_foot" name="preferred_foot" required>
+                    </div>
+                    <!-- Add more form input fields for other relevant features -->
+                    <!-- Repeat this pattern for all other relevant features -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Selected Midfielders Table -->
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="mb-4" style="color: darkred;">Selected Midfielders REAL MADRID</h2> <!-- Set heading color to black -->
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="color: black;">Player Name</th> <!-- Set heading color to black -->
+                            <th style="color: black;">Midfielder Performance</th> <!-- Set heading color to black -->
+                            <th style="color: blue;"> Performance Category</th> 
+                            <th style="color: black;">Club Name</th> 
+                            <th style="color: black;">preferred_foot</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, row in  selected_midfielders.iterrows() %}
+                        <tr>
+                            <td style="color: black;">{{ row['Known As'] }}</td> <!-- Set text color to black -->
+                            <td style="color: goldenrod;">{{ row['mid performance'] }}</td> <!-- Set text color to goldenrod -->
+                            <td style="color: red;">{{ row['Performance Category'] }}</td>
+                            <td style="color: goldenrod;">{{ row['Club Name'] }}</td>
+                            <td style="color: black;">{{ row['Preferred Foot'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image at the bottom -->
+    <div>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Midfielder Analysis Plot">
+    </div>
+
+</body>
+</html>
