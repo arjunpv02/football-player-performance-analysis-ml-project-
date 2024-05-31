@@ -1,0 +1,362 @@
+from flask import Flask, render_template, request, redirect, url_for
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt 
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
+import matplotlib.pyplot as plt
+import io
+import base64
+import pandas as pd
+
+app = Flask(__name__)
+
+# Define global variables to store the dataset and trained model
+uploaded_dataset = None
+player_data_gk = {}
+knn_model = None
+rd = pd.DataFrame()
+
+# Define global variables to store the dataset and trained model
+scaler = StandardScaler()
+knn_fw = KNeighborsRegressor(n_neighbors=5)  # Assuming k=5
+fw_mse = None
+scaler_fw = MinMaxScaler()
+
+ 
+@app.route('/')
+def index():
+    return render_template('index.html', title='FOOTBALL PLAYER PERFORMANCE ANALYSIS')
+@app.route('/upload', methods=['POST'])
+def upload():
+    global uploaded_dataset
+    
+    if request.method == 'POST':
+        file = request.files['file']
+        if not file:
+            return render_template('index.html', message='No file uploaded', title='FOOTBALL PLAYER PERFORMANCE ANALYSIS')
+
+        # Debugging: Check if file is being uploaded
+        #print("Uploaded File:", file)
+
+        uploaded_dataset = pd.read_csv(file)
+
+        # Debugging: Print the first few rows of the uploaded dataset
+        #print("First Few Rows of Uploaded Dataset:")
+        #print(uploaded_dataset.head())
+
+        if uploaded_dataset.empty:
+            return render_template('index.html', message='Uploaded dataset is empty', title='FOOTBALL PLAYER PERFORMANCE ANALYSIS')
+
+        # Get the first 10 rows of the dataset
+        df_first_10 = uploaded_dataset.head(10)
+        # Convert DataFrame to HTML format
+        table_html = df_first_10.to_html(classes='table table-striped')
+        return render_template('dataset.html', table_html=table_html)
+
+"""# Function to predict centerback performance using the KNN model
+def calculate_cb_performance(input_data, knn_model):
+    scaled_input = scaler.transform([input_data])
+    weighted_input = scaled_input * np.array([feature_weights[col] for col in relevant_features_cb])
+    cb_performance = knn_model.predict(weighted_input)
+    return cb_performance[0] """
+
+
+@app.route('/cb', methods=['GET', 'POST'])
+def cb_analysis():
+    global uploaded_dataset, knn_model
+    scaler = StandardScaler()
+    
+    if uploaded_dataset is not None:
+        rd = uploaded_dataset.copy()
+        
+        # Preprocess the uploaded dataset 
+        relevant_features_cb = [
+            'Overall', 'Potential', 'Age', 'Height(in cm)', 'Weight(in kg)',
+            'TotalStats', 'BaseStats', 'International Reputation',
+            'Crossing', 'Finishing', 'Heading Accuracy', 'Short Passing', 'Volleys',
+            'Dribbling', 'Curve', 'Freekick Accuracy', 'LongPassing', 'BallControl',
+            'Acceleration', 'Sprint Speed', 'Agility', 'Reactions', 'Balance',
+            'Shot Power', 'Jumping', 'Stamina', 'Strength', 'Long Shots', 'Aggression',
+            'Interceptions', 'Positioning', 'Vision', 'Penalties', 'Composure', 'Marking',
+            'Standing Tackle', 'Sliding Tackle'
+        ]
+        
+        # Define weights for each feature (example weights, adjust as needed) 
+        feature_weights = {
+        'Overall': 0.1,
+        'Potential': 0.1,
+        'Age': 0.05,
+        'Height(in cm)': 0.05,
+        'Weight(in kg)': 0.05,
+        'TotalStats': 0.1,
+        'BaseStats': 0.1,
+        'International Reputation': 0.1,
+        'Crossing': 0.05,
+        'Finishing': 0.05,
+        'Heading Accuracy': 0.1,
+        'Short Passing': 0.05,
+        'Volleys': 0.05,
+        'Dribbling': 0.05,
+        'Curve': 0.05,
+        'Freekick Accuracy': 0.05,
+        'LongPassing': 0.05,
+        'BallControl': 0.05,
+        'Acceleration': 0.05,
+        'Sprint Speed': 0.05,
+        'Agility': 0.05,
+        'Reactions': 0.1,
+        'Balance': 0.05,
+        'Shot Power': 0.05,
+        'Jumping': 0.05,
+        'Stamina': 0.05,
+        'Strength': 0.1,
+        'Long Shots': 0.05,
+        'Aggression': 0.1,
+        'Interceptions': 0.1,
+        'Positioning': 0.05,
+        'Vision': 0.05,
+        'Penalties': 0.05,
+        'Composure': 0.1,
+        'Marking': 0.1,
+        'Standing Tackle': 0.1,
+        'Sliding Tackle': 0.1
+        }
+        
+        
+        # Extract centerbacks from the dataset
+        centerback = rd[rd['Positions Played'].isin(['CB','LB','RB'])].copy()
+        
+        # Extract relevant features for centerbacks
+        centerback_features = centerback[relevant_features_cb].copy()
+        
+        # Standardize the features
+        scaler = StandardScaler()
+        cb_scaled = scaler.fit_transform(centerback_features)
+        
+        # Apply weights to the standardized features
+        cb_weighted = cb_scaled * np.array([feature_weights[col] for col in relevant_features_cb])
+        
+        # Calculate centerback performance as the sum of standardized features multiplied by their weights
+        cb_performance = np.sum(cb_weighted, axis=1)
+        
+        # Add centerback performance to the dataframe
+        centerback['cb performance'] = cb_performance
+
+        # Split the data into features (X) and target variable (y)
+        X = cb_weighted  # Features with standardized and weighted values
+        y = cb_performance  # Target variable 'mid_performance'
+
+# Split the data into training and testing sets (e.g., 80% train, 20% test)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Now 'X_train', 'X_test', 'y_train', and 'y_test' contain the training and testing sets
+
+# Create KNN model
+        knn_model = KNeighborsRegressor(n_neighbors=5)  # You can adjust the number of neighbors as needed
+
+# Train KNN model
+        knn_model.fit(X_train, y_train)
+
+# Predict on the training set
+        y_train_pred_knn = knn_model.predict(X_train)
+
+# Predict on the testing set
+        y_test_pred_knn = knn_model.predict(X_test)
+
+# Calculate mean squared error manually for KNN
+        train_mse_knn = mean_squared_error(y_train, y_train_pred_knn)
+        test_mse_knn = mean_squared_error(y_test, y_test_pred_knn)
+
+# Calculate root mean squared error (RMSE) for KNN
+        train_rmse_knn = np.sqrt(train_mse_knn)
+        test_rmse_knn = np.sqrt(test_mse_knn)
+
+        #print("KNN Train RMSE:", train_rmse_knn)
+        #print("KNN Test RMSE:", test_rmse_knn)
+        
+        # Define thresholds for performance categories
+        threshold_low = 0.6
+        threshold_medium = 1.0
+        threshold_high = 1.7
+
+# Create a new column to store the performance category
+        centerback['cb category'] = ''
+
+# Categorize centerbacks based on 'cb performance'
+        for index, row in centerback.iterrows():
+                performance = row['cb performance']
+                if performance < threshold_low:
+                       category = 'Low'
+                elif threshold_low <= performance < threshold_medium:
+                       category = 'Medium'
+                elif threshold_medium <= performance < threshold_high:
+                       category = 'High'
+                else:
+                       category = 'Very High'
+                centerback.at[index, 'cb category'] = category
+
+
+        # Select top 4 centerbacks from Real Madrid CF
+        real_centerback = centerback[centerback['Club Name'] == 'Real Madrid CF']
+        real_centerback_sorted = real_centerback.sort_values(by='cb performance', ascending=False)
+        real_centerback_sorted=real_centerback_sorted.head(10)
+        selected_centerback = real_centerback_sorted[['Known As', 'cb performance', 'cb category', 'Positions Played']].head(4)
+        print(selected_centerback)
+        
+        # Create a horizontal bar plot of Performance_max values
+        plt.figure(figsize=(8, 6))  # Adjust the figure size as needed
+        plt.barh(selected_centerback['Known As'], selected_centerback['cb performance'], color='skyblue')
+        plt.xlabel('cb performance')
+        plt.ylabel('Player')
+        plt.title('Performance_max for CB')
+
+        # Save the plot to a BytesIO object
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+
+        # Encode the plot image to base64
+        plot_url = base64.b64encode(img.getvalue()).decode()
+
+        # Pass the predictions and any other relevant data to cb.html for display
+        return render_template('cb.html',plot_url=plot_url, selected_centerback=selected_centerback,real_centerback_sorted=real_centerback_sorted, train_rmse_knn=train_rmse_knn, test_rmse_knn=test_rmse_knn)
+
+    else:
+        return render_template('cb.html', message='No dataset uploaded')
+
+
+
+@app.route('/goalkeeper', methods=['GET', 'POST'])
+def goalkeeper_analysis():
+    global uploaded_dataset, scaler, player_data_gk
+      
+    if uploaded_dataset is not None:
+        rd = uploaded_dataset.copy()
+        
+         
+        goalkeeper_columns = ['Known As', 'Overall', 'Potential', 'GK Rating', 'Goalkeeper Diving', 'Goalkeeper Handling', ' GoalkeeperKicking', 
+                      'Goalkeeper Positioning', 'Goalkeeper Reflexes', 'Club Name', 'Preferred Foot']
+ 
+        
+        
+        # extracting gk from dataset
+        gk = rd[rd['Positions Played'] == 'GK'].copy()
+
+        gk=gk[goalkeeper_columns]
+        from sklearn.preprocessing import MinMaxScaler
+
+
+        # Normalize the selected attributes
+        scaler = MinMaxScaler()
+        normalized_attributes = scaler.fit_transform(gk.drop(columns=['Known As', 'Club Name', 'Preferred Foot']))
+        # Assign weights to the normalized attributes
+        weights = {
+    'Overall': 0.3,
+    'Potential': 0.2,
+    'GK Rating': 0.1,
+    'GK Diving': 0.1,
+    'GK Handling': 0.1,
+    'GK Kicking': 0.1,
+    'GK Positioning': 0.1,
+    'GK Reflexes': 0.1
+        }
+
+# Calculate the weighted sum to derive 'GK Performance'
+        gk['GK Performance'] = (normalized_attributes * np.array(list(weights.values()))).sum(axis=1)
+
+# Sort the goalkeeper data based on 'GK Performance' column in descending order
+        sorted_goalkeeper_data = gk.sort_values(by='GK Performance', ascending=False)
+
+# Print players with descending order of GK performance
+        #print(sorted_goalkeeper_data[['Known As', 'GK Performance','Performance Category']])
+
+
+# Assume 'goalkeeper_data' contains relevant features and 'GK Performance' contains target variable
+
+
+# Split the data into features and target variable
+
+        X = gk.drop(columns=['GK Performance','Known As', 'Club Name', 'Preferred Foot'])
+        y = gk['GK Performance']
+        print(X.info())
+
+# Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Standardize features (important for KNN)
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+
+# Train the KNN model
+        knn_gk = KNeighborsRegressor(n_neighbors=5)  # Assuming k=5
+        knn_gk.fit(X_train_scaled, y_train)
+
+# Predict goalkeeper performance on the testing set
+        y_pred = knn_gk.predict(X_test_scaled)
+
+# Evaluate the model
+        mse = mean_squared_error(y_test, y_pred)
+        #print("Mean Squared Error:", mse)
+
+
+        # MAX AND min of the values::
+        print("max value  :",gk['GK Performance'].max())
+        print("min value : ",gk['GK Performance'].min())
+        
+        # Define thresholds for performance categories
+        threshold_low = 0.25
+        threshold_medium = 0.5
+        threshold_high = 0.75
+
+        # Create a new column to store the performance category
+        gk['Performance Category'] = ''
+
+        # Categorize players based on 'GK Performance'
+                # Categorize players based on 'GK Performance'
+# Assuming gk is a DataFrame with 'GK Performance' column
+        for index, row in gk.iterrows():
+            performance = row['GK Performance']
+            if performance < threshold_low:
+                category = 'Very Low'
+            elif threshold_low <= performance < threshold_medium:
+                category = 'Low'
+            elif threshold_medium <= performance < threshold_high:
+                category = 'Medium'
+            else:
+                category = 'High'
+            gk.at[index, 'Performance Category'] = category
+        gk_pass=gk[['Known As', 'GK Performance', 'Performance Category']]
+            
+        real_gk = gk[gk['Club Name'] == 'Real Madrid CF']
+        real_gk = real_gk.sort_values(by='GK Performance',ascending=False)
+        #print(real_gk)
+
+        real_gk_pass=real_gk[['Known As', 'GK Performance', 'Performance Category']]
+        print(real_gk_pass)
+        
+        # Create a horizontal bar plot of Performance_max values
+        plt.figure(figsize=(8, 6))  # Adjust the figure size as needed
+        plt.barh(real_gk_pass['Known As'], real_gk_pass['GK Performance'], color='red')
+        plt.xlabel('Performance_max')
+        plt.ylabel('Player')
+        plt.title('Performance_max for GOALKEEPERS')
+
+    # Save the plot to a BytesIO object
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+
+    # Encode the plot image to base64
+        plot_url = base64.b64encode(img.getvalue()).decode()
+
+        #print(gk_pass)
+        # Print the DataFrame with the added performance category
+        return render_template('gk.html',plot_url=plot_url, gk_pass=gk_pass , mse=mse, real_gk_pass=real_gk_pass )
+        # Pass the predictions and any other relevant data to cb.html for display
+    else:
+        return render_template('gk.html', message =' NO DATSET UPLOADED !..')
+    return render_template('gk.html')
