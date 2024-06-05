@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOOTBALL PLAYER PERFORMANCE ANALYSIS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .top-section {
+            background-color: #1E90FF;
+            background-image: url("images/t_silva1.jpg");
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adding a text shadow */
+            padding: 60px 0;
+        }
+        
+        .about-link {
+            transition: color 0.3s ease-in-out; /* Smooth color transition */
+        }
+        
+        .about-link:hover {
+            color: #FF6347; /* Change color on hover */
+        }
+        .upload-section {
+            background-color: white; /* Pink background color */
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .upload-btn, .display-btn, .cb-btn {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            margin-top: 10px;
+        }
+        .upload-btn:hover, .display-btn:hover, .cb-btn:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .file-input {
+            display: none;
+        }
+        .custom-file-upload {
+            border: 2px dashed #ccc;
+            border-color :black;
+            display: inline-block;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            margin-bottom: 20px;
+        }
+        .custom-file-upload:hover {
+            background-color: #f9f9f9;
+            border-color: #bbb;
+        }
+        #file-name {
+            display: block;
+            margin-top: 10px;
+        }
+        .analyze-section {
+            background-color: #87ceeb; /* Sky blue background color */
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .about-link {
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .about-link:hover {
+            text-decoration: none;
+            color: #f8f9fa;
+        }
+        .blue-heading {
+            color: blue;
+        }
+        
+        .pink-background {
+            background-color: pink;
+        }
+        
+        .smaller-text {
+            font-size: 16px; /* Adjust font size as desired */
+        }
+            .analyze-card {
+                border: 2px solid #007bff; /* Add border */
+                border-radius: 20px;
+                background-color: #f8f9fa; /* Set background color */
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+                transition: all 0.3s ease; /* Add transition effect */
+            }
+            .analyze-card:hover {
+                transform: translateY(-5px); /* Add hover effect */
+            }
+            
+            .analyze-card .card-body {
+                padding: 40px;
+            }
+            
+            .analyze-card .btn-primary {
+                background-color: #007bff; /* Set button background color */
+                border-color: #007bff; /* Set button border color */
+            }
+            
+            .analyze-card .btn-primary:hover {
+                background-color: #0056b3; /* Set button background color on hover */
+                border-color: #0056b3; /* Set button border color on hover */
+            }
+            .analyze-section {
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            
+            .analyze-section img {
+                display: block;
+                margin: 0 auto;
+            }
+            
+            .analyze-section h2 {
+                font-size: 24px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 20px;
+            }
+            
+            .analyze-section a.btn {
+                font-size: 18px;
+                background-color: #007bff;
+                border-color: #007bff;
+                padding: 12px 20px;
+            }
+            
+            .analyze-section a.btn:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+            }  
+        /* Background image for the bottom section */
+    .bottom-section {
+        background-image: url('background-image.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 50px 0;
+    }
+
+    /* Style for the new analyze section */
+    .analyze-section-new {
+        background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Box shadow for depth */
+    }
+
+    /* Heading style for the new analyze section */
+    .analyze-section-new h2 {
+        color: #333; /* Dark text color */
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    /* Button style for the new analyze section */
+    .analyze-section-new .btn {
+        background-color: #FFD700; /* Golden yellow */
+        border-color: #FFD700;
+        color: black; /* Black text color */
+        font-size: 18px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transition effect */
+    }
+
+    .analyze-section-new .btn:hover {
+        background-color: #FFC107; /* Darken the background color on hover */
+        border-color: #FFC107;
+        color: black; /* Darken the text color on hover */
+    }             
+    </style>
+</head>
+<body >
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 top-section">
+                <h1 class="heading display-4" style="color: white">Football Player Performance Analysis</h1>
+                <div class="float-right mr-3"> <!-- Added Bootstrap classes for positioning -->
+                    <a href="about_us.html" class="about-link">About Us</a>
+                </div>
+                <div style="text-align: center;">
+                <p>Elevate your game to new heights with data-driven insights and expert analysis on our revolutionary football performance website</p>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="row">
+                <div class="upload-section">
+                    <h2 class="mb-4">Upload Dataset</h2>
+                    <form action="/upload" method="post" enctype="multipart/form-data">
+                        <label for="file" class="custom-file-upload">Select file</label>
+                        <input type="file" name="file" id="file" class="file-input">
+                        <span id="file-name"></span> <!-- Display the name of the uploaded file -->
+                        <button type="submit" class="btn btn-success upload-btn">Upload</button>
+                        <button type="button" class="btn btn-primary display-btn">Display Dataset</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9">
+                <h3 class="blue-heading"><u>Exploring Possibilities of Machine Learning in Football Performance Analysis</u></h3>
+                <p class="pink-background smaller-text">In football analysis, machine learning offers transformative opportunities. By leveraging advanced algorithms and data analytics, teams gain deeper insights into player dynamics, tactical strategies, and performance metrics. Machine learning algorithms sift through vast datasets, extracting patterns and correlations that traditional methods may miss. This enables a more nuanced understanding of player performance and team dynamics, driving informed decision-making on and off the field.
+                Predictive modeling stands out as a key application of machine learning in football. Analyzing historical data and player metrics, these algorithms forecast performance, predict match outcomes, and simulate game scenarios. This foresight empowers coaches to optimize strategies dynamically, adapting tactics based on anticipated outcomes. Additionally, real-time analysis during matches allows for agile adjustments and the exploitation of emerging opportunities.
+                Furthermore, machine learning contributes to player development and injury prevention. By monitoring biometrics, training loads, and movement patterns, algorithms identify injury risks and optimize training regimens to mitigate them. Personalized coaching and feedback tailored to individual players maximize performance potential. As teams continue to embrace and refine these technologies, the future of football promises unprecedented insights and innovations</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="card analyze-card">
+                    <div class="card-body text-center">
+                        <h2 class="card-title mb-4">Analyse Center Back Performance</h2>
+                        <p class="card-text lead">Unlock the potential of your center backs with in-depth performance analysis.</p>
+                        <a href="/cb" class="btn btn-lg btn-primary cb-btn">View CB Analysis</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center py-5 bg-light">
+                    <div class="analyze-section mb-5">
+                        <h2 class="mb-4">Analyse Goalkeeper Performance</h2>
+                        <a href="/goalkeeper" class="btn btn-lg btn-primary gk-btn">View GK Analysis</a>
+                    </div>
+                    <div class="analyze-section">
+                        <h2 class="mb-4">Analyse Midfielder Performance</h2>
+                        <a href="/midfielder" class="btn btn-lg btn-primary mid-btn">View Midfielder Analysis</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    
+        <div class="container">
+            <div class="row bottom-section">
+                <div class="col-md-12">
+                    <div class="analyze-section-new">
+                        <h2 class="mb-4">Analyse Forward Performance</h2>
+                        <a href="/forward" class="btn btn-forward">View Forward Analysis</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    <script>
+        document.querySelector('.upload-btn').addEventListener('click', function() {
+            window.location.href = "/dataset"; // Redirect to the dataset page
+        });
+
+        document.getElementById('file').addEventListener('change', function() {
+            var fileName = this.files[0].name;
+            document.getElementById('file-name').innerText = fileName; // Display the name of the uploaded file
+        });
+    </script>
+
+    
+    
+
+</body>
+</html>
