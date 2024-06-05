@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forward Analysis</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Dark blue border color for the webpage */
+        body {
+            border: 25px solid #0d47a1; /* Dark blue color */
+            padding: 20px;
+        }
+
+        /* Form input fields styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Light blue color for form inputs */
+        .light-blue {
+            background-color: #ADD8E6;
+        }
+
+        /* Green color for form inputs */
+        .green {
+            background-color: lightgreen;
+        }
+
+        /* Yellow color for form inputs */
+        .yellow {
+            background-color: #FFFF99;
+        }
+
+        /* Divide webpage into two horizontal portions */
+        .upper-section {
+        background-color: #FFC0CB; /* Light red color */
+        padding: 20px;
+        }
+
+        .lower-section {
+        background-color: #FFB6C1; /* Light rose color */
+        padding: 20px;
+        }
+
+        /* Styles for the top forward performers table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #0d47a1; /* Dark blue border for the table */
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #0d47a1; /* Dark blue background color for table headers */
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="upper-section">
+    <div class="container">
+        <h1 class="mb-4">Forward Analysis</h1>
+        {% if message %}
+        <div class="alert alert-warning" role="alert">
+            {{ message }}
+        </div>
+        {% else %}
+        <div class="alert alert-success" role="alert">
+            Mean Squared Error: {{ fw_mse }} <br>
+            Max Forward Performance: {{ max_value }} <br>
+            Min Forward Performance: {{ min_value }}
+        </div>
+        {% endif %}
+
+        <!-- Forward Performance Form -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card bg-gold">
+                    <div class="card-header">
+                        <h2 class="mb-4">Enter Forward Data</h2>
+                    </div>
+                    <div class="card-body">
+                        <form action="/predict_forward" method="post">
+                            <div class="form-group light-blue">
+                                <label for="known_as">Player Name:</label>
+                                <input type="text" class="form-control" id="known_as" name="known_as" required>
+                            </div>
+                            <div class="form-group light-blue">
+                                <label for="overall">Overall Rating:</label>
+                                <input type="number" class="form-control" id="overall" name="overall" required>
+                            </div>
+                            <div class="form-group green">
+                                <label for="pace">Pace Total:</label>
+                                <input type="number" class="form-control" id="pace" name="pace" required>
+                            </div>
+                            <div class="form-group yellow">
+                                <label for="shooting">Shooting Total:</label>
+                                <input type="number" class="form-control" id="shooting" name="shooting" required>
+                            </div>
+                            <div class="form-group light-blue">
+                                <label for="passing">Passing Total:</label>
+                                <input type="number" class="form-control" id="passing" name="passing" required>
+                            </div>
+                            <div class="form-group green">
+                                <label for="finishing">Finishing:</label>
+                                <input type="number" class="form-control" id="finishing" name="finishing" required>
+                            </div>
+                            <div class="form-group yellow">
+                                <label for="crossing">Crossing:</label>
+                                <input type="number" class="form-control" id="crossing" name="crossing" required>
+                            </div>
+                            <div class="form-group light-blue">
+                                <label for="heading">Heading Accuracy:</label>
+                                <input type="number" class="form-control" id="heading" name="heading" required>
+                            </div>
+                            <div class="form-group green">
+                                <label for="potential">Potential:</label>
+                                <input type="number" class="form-control" id="potential" name="potential" required>
+                            </div>
+                            <div class="form-group yellow">
+                                <label for="st_rating">Striker (ST) Rating:</label>
+                                <input type="number" class="form-control" id="st_rating" name="st_rating" required>
+                            </div>
+                            <div class="form-group light-blue">
+                                <label for="club_name">Club Name:</label>
+                                <input type="text" class="form-control" id="club_name" name="club_name" required>
+                            </div>
+                            <div class="form-group green">
+                                <label for="preferred_foot">Preferred Foot (left/right):</label>
+                                <input type="text" class="form-control" id="preferred_foot" name="preferred_foot" required>
+                            </div>
+                            <!-- Add more form input fields as needed -->
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="lower-section">
+        <!-- Displaying Top Forward Performers -->
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="mb-4">Top Forward Performers</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Player Name</th>
+                            <th>Forward Performance</th>
+                            <th>Performance Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, row in fw_pass.iterrows() %}
+                        <tr>
+                            <td>{{ row['Known As'] }}</td>
+                            <td>{{ row['Forward Performance'] }}</td>
+                            <td>{{ row['Performance Category'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- Display the plot -->
+    <div>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Forward Analysis Plot">
+    </div>
+    </div>
+</div>
+
+<!-- Displaying Real Madrid CF Forwards -->
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">Real Madrid CF Forwards</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Player Name</th>
+                    <th>Forward Performance</th>
+                    <th>Performance Category</th>
+                    <th>Club Name</th>
+                    <th>Preferred Foot</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in real_forwards_sorted.iterrows() %}
+                <tr>
+                    <td>{{ row['Known As'] }}</td>
+                    <td>{{ row['Forward Performance'] }}</td>
+                    <td>{{ row['Performance Category'] }}</td>
+                    <td>{{ row['Club Name'] }}</td>
+                    <td>{{ row['Preferred Foot'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+
+</html>
